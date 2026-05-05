@@ -9,7 +9,7 @@ import { useShipmentStore } from '../../src/context/shipmentStore';
 export default function ShipmentDetails() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { shipments, updateShipment } = useShipmentStore();
+  const { shipments, updateShipment, user } = useShipmentStore();
   const shipment = shipments.find(s => s.id === id);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -104,7 +104,14 @@ export default function ShipmentDetails() {
         {/* Actions Section */}
         <View style={styles.actionsRow}>
             {shipment.status === 'Pending Finance' && (
-                <TouchableOpacity style={[styles.actionButton, { backgroundColor: COLORS.finance }]} onPress={handleFinanceApproval}>
+                <TouchableOpacity 
+                    style={[
+                        styles.actionButton, 
+                        { backgroundColor: COLORS.finance },
+                        user?.role !== 'finance' && { opacity: 0.5 }
+                    ]} 
+                    onPress={user?.role === 'finance' ? handleFinanceApproval : () => Alert.alert('Access Denied', 'Only the Finance Department can approve LC costs.')}
+                >
                     <CheckCircle size={18} color={COLORS.surface} style={{ marginRight: SPACING.xs }} />
                     <Text style={styles.actionButtonText}>Finance Approve</Text>
                 </TouchableOpacity>
